@@ -51,14 +51,16 @@ app.get("/api/health", (req, res) => {
 const frontendDistPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendDistPath));
 
-app.get("/", (req, res) => {
+// Catch-all route to serve the React SPA for any client-side routes
+app.get("*", (req, res) => {
   const indexPath = path.join(frontendDistPath, "index.html");
   const fs = require("fs");
   if (fs.existsSync(indexPath)) {
     return res.sendFile(indexPath);
   }
-  res.send("XSS Scanner Backend Running");
+  res.send("XSS Scanner Backend Running (Frontend build not found in ../frontend/dist)");
 });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
