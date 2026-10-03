@@ -50,7 +50,6 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // Create and save new user
     const newUser = new User({
       name: name.trim(),
       email: email.toLowerCase().trim(),
@@ -59,10 +58,6 @@ router.post("/register", async (req, res) => {
 
     const savedUser = await newUser.save();
 
-    // =========================================================================
-    // EXPLICIT MONGODB VERIFICATION:
-    // Query MongoDB directly to verify that the user document was successfully persisted
-    // =========================================================================
     const verificationRecord = await User.findById(savedUser._id)
       .select("-password")
       .lean();
@@ -75,7 +70,6 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // Verification metadata
     const dbAudit = {
       verified: true,
       databaseName: mongoose.connection.name || "xssScannerDB",
@@ -112,8 +106,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// 2. LOGIN USER
-// Finds user, compares hashed password, verifies presence in MongoDB
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -125,7 +117,6 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Query user in MongoDB
     const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) {
       return res.status(401).json({
@@ -134,7 +125,6 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Compare hashed password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({
@@ -143,11 +133,9 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Update lastLogin in MongoDB
     user.lastLogin = new Date();
     await user.save();
 
-    // Verify record from MongoDB
     const verifiedUser = await User.findById(user._id).select("-password").lean();
 
     const dbAudit = {
@@ -183,8 +171,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// 3. LIVE MONGODB PERSISTENCE CHECKER ENDPOINT
-// Allows frontend to query MongoDB in real-time to confirm a user's exact database entry
 router.get("/verify-db/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
@@ -233,7 +219,6 @@ router.get("/verify-db/:userId", async (req, res) => {
   }
 });
 
-// 4. STATS / VERIFY DATABASE CONNECTION
 router.get("/stats", async (req, res) => {
   try {
     const count = await User.countDocuments();

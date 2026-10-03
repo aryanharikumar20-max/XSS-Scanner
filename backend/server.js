@@ -47,11 +47,9 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Serve frontend build if available (supports single-service full-stack deployment)
 const frontendDistPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendDistPath));
 
-// Catch-all route to serve the React SPA for any client-side routes (Express 5 compatible)
 app.get(/.*/, (req, res) => {
   const indexPath = path.join(frontendDistPath, "index.html");
   const fs = require("fs");

@@ -12,7 +12,6 @@ function escapeHtml(text) {
     .replace(/'/g, "&#39;");
 }
 
-// In-memory comment stores for Stored XSS demos
 let storedVulnerableComments = [
   "Welcome to the demo guestbook!",
   "Feel free to leave a review."
@@ -23,11 +22,6 @@ let storedSecureComments = [
   "All inputs are sanitized before rendering."
 ];
 
-// ==========================================
-// 1. REFLECTED XSS DEMOS
-// ==========================================
-
-// 1A. Vulnerable Reflected Endpoint
 router.get("/vulnerable", (req, res) => {
   const query = req.query.search || "guest";
 
@@ -50,7 +44,6 @@ router.get("/vulnerable", (req, res) => {
   res.send(htmlResponse);
 });
 
-// 1B. Secure Reflected Endpoint
 router.get("/secure", (req, res) => {
   const query = req.query.search || "guest";
 
@@ -81,12 +74,6 @@ router.get("/secure", (req, res) => {
   res.send(htmlResponse);
 });
 
-// ==========================================
-// 2. DOM-BASED XSS DEMOS
-// ==========================================
-
-// 2A. Vulnerable DOM-based Endpoint
-// Client script directly assigns location.search / location.hash to element.innerHTML
 router.get("/dom-vulnerable", (req, res) => {
   const htmlResponse = `
     <!DOCTYPE html>
@@ -115,8 +102,6 @@ router.get("/dom-vulnerable", (req, res) => {
   res.send(htmlResponse);
 });
 
-// 2B. Secure DOM-based Endpoint
-// Uses safe .textContent API and enforces CSP
 router.get("/dom-secure", (req, res) => {
   res.setHeader(
     "Content-Security-Policy",
@@ -150,11 +135,6 @@ router.get("/dom-secure", (req, res) => {
   res.send(htmlResponse);
 });
 
-// ==========================================
-// 3. STORED (PERSISTENT) XSS DEMOS
-// ==========================================
-
-// 3A. Vulnerable Stored XSS Page & Submission
 router.get("/stored-vulnerable", (req, res) => {
   const commentsList = storedVulnerableComments
     .map((c) => `<li>${c}</li>`)
